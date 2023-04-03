@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
   if (!user) {
     return res.status(401).json({ msg: "user_name not found" });
   }
-  let passValid = await bcrypt.compare(req.body.password, user.password);
+  let passValid = bcrypt.compare(req.body.password, user.password);
   if (!passValid) {
     return res.status(401).json({ msg: `problem with the password` });
   }
