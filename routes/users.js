@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { UserModel, validateUser, validateLogin, createToken, validateUpdate, validatePassWordChange } = require("../models/userModel")
+const { UserModel, validateUser, validateLogin, createToken, validateUpdate, validateChangePass } = require("../models/userModel")
 const { auth, authAdmin } = require("../auth/auth.js");
 const router = express.Router();
 
@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
   if (!user) {
     return res.status(401).json({ msg: "user_name not found" });
   }
-  let passValid = bcrypt.compare(req.body.password, user.password);
+  let passValid = await bcrypt.compare(req.body.password, user.password);
   if (!passValid) {
     return res.status(401).json({ msg: `problem with the password` });
   }
@@ -75,15 +75,53 @@ router.put("/:id", auth, async (req, res) => {
     return res.status(400).json(validBody.error.details)
   }
   try {
-    let id = req.params.id;
+    let id = req.params.id.trim();
     let data;
     if (req.tokenData.role == "admin") {
       data = await UserModel.updateOne({ _id: id }, req.body);
-    }
-    else {
-      data = await UserModel.updateOne({ id: req.tokenData._id }, req.body);
+    } else if (id == req.tokenData._id) {
+      data = await UserModel.updateOne({ _id: id }, req.body);
     }
     res.json(data);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(502).json({ err })
+  }
+})
+// change password
+// Domain/users/changePass/(id of the user)
+
+router.put("/changePass/:id", auth, async (req, res) => {
+  let validBody = validateChangePass(req.body);
+  if (validBody.error) {
+    return res.status(400).json(validBody.error.details)
+  }
+  try {
+    let id = req.params.id;
+    let user = await UserModel.findById(id);
+    if (req.tokenData.role == "admin") {
+      user.password = req.body.newPassword;
+      user.password = await bcrypt.hash(user.password, 10);
+      await UserModel.updateOne({ _id: id }, { password: user.password });
+      user = await user.save();
+    }
+    let email = await UserModel.findOne({ email: req.body.email });
+    if (!email) {
+      return res.status(401).json({ msg: "email or password  not found" });
+    }
+    let passValid = await bcrypt.compare(req.body.password, user.password);
+    if (!passValid) {
+      return res.status(401).json({ msg: `problem with the password` });
+    }
+    if (id == req.tokenData._id) {
+      user.password = req.body.newPassword;
+      user.password = await bcrypt.hash(user.password, 10);
+      await UserModel.updateOne({ _id: id }, { password: user.password });
+      user = await user.save();
+    }
+    res.json(user);
+    console.log(user);
   }
   catch (err) {
     console.log(err);

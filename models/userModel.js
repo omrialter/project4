@@ -7,6 +7,7 @@ let schema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
+    newPassword: String,
     gender: String,
     user_name: String,
     desc: {
@@ -67,6 +68,16 @@ exports.validateLogin = (_reqBody) => {
     let joiSchema = Joi.object({
         user_name: Joi.string().min(3).max(16).required(),
         password: Joi.string().min(6).max(20).required(),
+
+    })
+    return joiSchema.validate(_reqBody)
+}
+
+exports.validateChangePass = (_reqBody) => {
+    let joiSchema = Joi.object({
+        email: Joi.string().min(2).max(100).email().required(),
+        password: Joi.string().min(6).max(20).required(),
+        newPassword: Joi.string().min(6).max(20).required(),
 
     })
     return joiSchema.validate(_reqBody)
