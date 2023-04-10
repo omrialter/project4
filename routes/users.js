@@ -10,6 +10,7 @@ router.get("/", async (req, res) => {
 })
 
 
+
 // Get user info 
 // Domain/users/userInfo
 router.get("/userInfo", auth, async (req, res) => {
@@ -61,7 +62,7 @@ router.post("/login", async (req, res) => {
   if (!passValid) {
     return res.status(401).json({ msg: `problem with the password` });
   }
-  let newToken = createToken(user._id, user.role, user.followings)
+  let newToken = createToken(user._id, user.role, user.followings, user.email)
   res.json({ token: newToken });
 
 })
@@ -109,6 +110,9 @@ router.put("/changePass/:id", auth, async (req, res) => {
     let email = await UserModel.findOne({ email: req.body.email });
     if (!email) {
       return res.status(401).json({ msg: "email or password  not found" });
+    }
+    if (req.body.email != req.tokenData.email) {
+      return res.status(401).json({ msg: "problem with the email" });
     }
     let passValid = await bcrypt.compare(req.body.password, user.password);
     if (!passValid) {
