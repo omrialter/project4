@@ -195,7 +195,6 @@ router.put("/unfollow/:id", auth, async (req, res) => {
         await user.updateOne({ $pull: { followers: req.tokenData._id } });
         await currentUser.updateOne({ $pull: { followings: req.params.id } });
         res.json("user has unfollowed ")
-
       } else {
         res.status(403).json("you dont follow this user");
       }
@@ -204,7 +203,6 @@ router.put("/unfollow/:id", auth, async (req, res) => {
       console.log(err);
       res.status(502).json({ err })
     }
-
   }
   else {
     res.status(403).json("you cant unfollow yourself")
@@ -214,7 +212,7 @@ router.put("/unfollow/:id", auth, async (req, res) => {
 //change user role
 //Domain/users/changeRole/(if of the user)
 router.patch("/changeRole/:id/:role", authAdmin, async (req, res) => {
-  const id = req.params.id;
+  const id = req.params.id.trim();
   const newRole = req.params.role;
   try {
     if (id == req.tokenData._id || id == "6428534cdba27a455053dbbc") {
@@ -227,10 +225,7 @@ router.patch("/changeRole/:id/:role", authAdmin, async (req, res) => {
     console.log(err);
     res.status(502).json({ err })
   }
-
 })
-
-
 
 
 
