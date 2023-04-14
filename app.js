@@ -13,9 +13,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 routesInit(app);
-app.get('*', function (req, res) {
-    res.status(404).sendfile(path.join(__dirname, "public", "page404.html"));
-})
+
 
 
 

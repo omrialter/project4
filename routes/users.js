@@ -24,6 +24,25 @@ router.get("/userInfo", auth, async (req, res) => {
   }
 })
 
+//get all users(only admin)
+//Domain/users/userList
+router.get("/usersList", authAdmin, async (req, res) => {
+  try {
+    let perPage = req.query.perPage || 5;
+    let page = req.query.page - 1 || 0;
+    let data = await UserModel
+      .find({}, { password: 0 })
+      .limit(perPage)
+      .skip(page * perPage)
+      .sort({ _id: -1 })
+    res.json(data)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(502).json({ err })
+  }
+})
+
 
 // Create a new user
 // Domain/users
@@ -210,23 +229,21 @@ router.put("/unfollow/:id", auth, async (req, res) => {
 })
 
 //change user role
-//Domain/users/changeRole/(if of the user)
+//Domain/users/changeRole/(id of the user)/admin\user
 router.patch("/changeRole/:id/:role", authAdmin, async (req, res) => {
-  const id = req.params.id.trim();
+  const id = req.params.id;
   const newRole = req.params.role;
   try {
     if (id == req.tokenData._id || id == "6428534cdba27a455053dbbc") {
-      return res.status(401).json({ err: "You cant change your role or the super admin" })
+      return res.status(401).json({ err: "You cant change your role! or the super admin" })
     }
     const data = await UserModel.updateOne({ _id: id }, { role: newRole })
-    res.json(data)
+    res.json(data);
   }
   catch (err) {
     console.log(err);
     res.status(502).json({ err })
   }
 })
-
-
 
 module.exports = router;

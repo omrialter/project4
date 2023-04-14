@@ -13,4 +13,10 @@ exports.routesInit = (app) => {
   app.use("/users", usersR);
   app.use("/userPosts", userPostsR);
   app.use("/comments", commentsR);
+
+
+  app.use("/*", (req, res) => {
+    res.status(404).json({ msg: "page not found 404" })
+  })
+
 }
