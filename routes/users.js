@@ -28,7 +28,7 @@ router.get("/userInfo", auth, async (req, res) => {
 //Domain/users/userList
 router.get("/usersList", authAdmin, async (req, res) => {
   try {
-    let perPage = req.query.perPage || 5;
+    let perPage = req.query.perPage || 10;
     let page = req.query.page - 1 || 0;
     let data = await UserModel
       .find({}, { password: 0 })
