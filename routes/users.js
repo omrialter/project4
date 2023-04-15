@@ -159,7 +159,7 @@ router.delete("/:id", auth, async (req, res) => {
   let id = req.params.id;
   let data;
   try {
-    if (req.tokenData.role == "admin") {
+    if (req.tokenData.role == "admin" && id != "643aeef089f3063e797886ae") {
       data = await UserModel.deleteOne({ _id: id });
     }
     else if (id == req.tokenData._id) {
@@ -234,7 +234,7 @@ router.patch("/changeRole/:id/:role", authAdmin, async (req, res) => {
   const id = req.params.id;
   const newRole = req.params.role;
   try {
-    if (id == req.tokenData._id || id == "6428534cdba27a455053dbbc") {
+    if (id == req.tokenData._id || id == "643aeef089f3063e797886ae") {
       return res.status(401).json({ err: "You cant change your role! or the super admin" })
     }
     const data = await UserModel.updateOne({ _id: id }, { role: newRole })
