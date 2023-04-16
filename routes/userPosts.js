@@ -16,7 +16,7 @@ router.get("/", auth, async (req, res) => {
     let reverse = (req.query.reverse == "yes") ? 1 : -1;
     try {
 
-        const allPosts = await UserPostModel.find({ $or: [{ user_id: req.tokenData._id }, { user_id: req.tokenData.followings }] }).
+        const allPosts = await UserPostModel.find({ $or: [{ user_name: req.tokenData.user_name }, { user_id: req.tokenData.followings }] }).
             limit(perPage)
             .skip(page * perPage)
             .sort({ [sort]: reverse });
@@ -69,6 +69,7 @@ router.post("/", auth, async (req, res) => {
     try {
         let userPost = new UserPostModel(req.body);
         userPost.user_name = req.tokenData.user_name;
+        userPost.user_id = req.tokenData._id;
         await userPost.save();
         res.status(201).json(userPost);
 

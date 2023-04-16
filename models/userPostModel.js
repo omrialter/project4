@@ -4,6 +4,7 @@ const Joi = require("joi");
 let schema = new mongoose.Schema({
     description: String,
     user_name: String,
+    user_id: String,
     img_url: String,
     likes: {
         type: Array, default: []
