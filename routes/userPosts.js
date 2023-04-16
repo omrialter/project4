@@ -68,7 +68,7 @@ router.post("/", auth, async (req, res) => {
     }
     try {
         let userPost = new UserPostModel(req.body);
-        userPost.user_id = req.tokenData._id;
+        userPost.user_name = req.tokenData._id;
         await userPost.save();
         res.status(201).json(userPost);
 

@@ -3,7 +3,7 @@ const Joi = require("joi");
 
 let schema = new mongoose.Schema({
     description: String,
-    user_id: String,
+    user_name: String,
     img_url: String,
     likes: {
         type: Array, default: []

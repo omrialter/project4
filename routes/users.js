@@ -81,7 +81,7 @@ router.post("/login", async (req, res) => {
   if (!passValid) {
     return res.status(401).json({ msg: `problem with the password` });
   }
-  let newToken = createToken(user._id, user.role, user.followings, user.email)
+  let newToken = createToken(user._id, user.role, user.followings, user.email, user.user_name)
   res.json({ token: newToken });
 
 })
