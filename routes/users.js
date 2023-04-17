@@ -9,6 +9,10 @@ router.get("/", async (req, res) => {
   res.json({ msg: "Users work" });
 })
 
+// only check the token 
+router.get("/checkToken", auth, async (req, res) => {
+  res.json({ _id: req.token._id, role: req.tokenData.role });
+})
 
 
 // Get user info 
