@@ -37,7 +37,13 @@ router.get("/search", auth, async (req, res) => {
     let s = req.query.s;
     let searchExp = new RegExp(s, "i");
     try {
-        let data = await UserPostModel.find({ $or: [{ user_id: req.tokenData._id }, { user_id: req.tokenData.followings }] }).find({ description: searchExp }).limit(10)
+        let data = await UserPostModel.find({
+            $or: [
+                { user_id: req.tokenData._id },
+                { user_id: { $in: req.tokenData.followings } },
+            ],
+            description: searchExp
+        }).limit(10)
         res.json(data);
     }
     catch (err) {

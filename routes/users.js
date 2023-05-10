@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { UserModel, validateUser, validateLogin, createToken, validateUpdate, validateChangePass } = require("../models/userModel")
 const { auth, authAdmin } = require("../auth/auth.js");
+const { UserPostModel } = require("../models/userPostModel");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -243,6 +244,26 @@ router.patch("/changeRole/:id/:role", authAdmin, async (req, res) => {
     }
     const data = await UserModel.updateOne({ _id: id }, { role: newRole })
     res.json(data);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(502).json({ err })
+  }
+})
+
+
+router.put("/like/:id", auth, async (req, res) => {
+  try {
+    let id = req.params.id;
+    const likedOne = await UserModel.findById(id);
+
+    if (!likedOne.likes.includes(req.tokenData._id)) {
+      await likedOne.updateOne({ $push: { likes: req.tokenData.user_name } });
+      res.json("user has been liked ")
+    } else {
+      await likedOne.updateOne({ $pull: { likes: req.tokenData.user_name } });
+      res.status(403).json("user has been unliked ");
+    }
   }
   catch (err) {
     console.log(err);

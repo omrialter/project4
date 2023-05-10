@@ -18,7 +18,7 @@ exports.UserPostModel = mongoose.model("userPosts", schema)
 
 exports.validateUserPosts = (_reqBody) => {
     let joiSchema = Joi.object({
-        description: Joi.string().min(1).max(400).allow(null, ""),
+        description: Joi.string().min(1).max(500).allow(null, ""),
         img_url: Joi.string().min(2).max(1000).required(),
     })
     return joiSchema.validate(_reqBody)
