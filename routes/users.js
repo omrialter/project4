@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
 
 // only check the token 
 router.get("/checkToken", auth, async (req, res) => {
-  res.json({ _id: req.token._id, role: req.tokenData.role });
+  res.json({ _id: req.tokenData._id, role: req.tokenData.role });
 })
 
 
@@ -252,23 +252,6 @@ router.patch("/changeRole/:id/:role", authAdmin, async (req, res) => {
 })
 
 
-router.put("/like/:id", auth, async (req, res) => {
-  try {
-    let id = req.params.id;
-    const likedOne = await UserModel.findById(id);
 
-    if (!likedOne.likes.includes(req.tokenData._id)) {
-      await likedOne.updateOne({ $push: { likes: req.tokenData.user_name } });
-      res.json("user has been liked ")
-    } else {
-      await likedOne.updateOne({ $pull: { likes: req.tokenData.user_name } });
-      res.status(403).json("user has been unliked ");
-    }
-  }
-  catch (err) {
-    console.log(err);
-    res.status(502).json({ err })
-  }
-})
 
 module.exports = router;

@@ -28,7 +28,7 @@ let schema = new mongoose.Schema({
     followings: {
         type: Array, default: [],
     },
-    likes: {
+    saved_posts: {
         type: Array, default: [],
     },
     relationship: {
