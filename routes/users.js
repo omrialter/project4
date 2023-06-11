@@ -29,6 +29,20 @@ router.get("/userInfo", auth, async (req, res) => {
   }
 })
 
+//get other user info (only admin)
+//Domain/users/OtherInfo
+router.get("/OtherInfo/:id", authAdmin, async (req, res) => {
+  let id = req.params.id.trim();
+  try {
+    let user = await UserModel.findOne({ _id: id }, { password: 0 })
+    res.json(user)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(502).json({ err })
+  }
+})
+
 //get all users(only admin)
 //Domain/users/userList
 router.get("/usersList", authAdmin, async (req, res) => {
