@@ -32,7 +32,7 @@ router.get("/userInfo", auth, async (req, res) => {
 //get other user info (only admin)
 //Domain/users/OtherInfo
 router.get("/OtherInfo/:id", authAdmin, async (req, res) => {
-  let id = req.params.id.trim();
+  const id = req.params.id;
   try {
     let user = await UserModel.findOne({ _id: id }, { password: 0 })
     res.json(user)
