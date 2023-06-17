@@ -90,8 +90,10 @@ router.post("/", async (req, res) => {
   }
   catch (err) {
     console.log(err);
-    res.status(400).json({ err: "email or user_name already exist" })
-    res.status(502).json({ err })
+    if (err.code == 11000) {
+      res.status(400).json({ msg: "email already exist", code: 11000 })
+    }
+
   }
 })
 
