@@ -47,14 +47,25 @@ router.get("/OtherInfo/:id", authAdmin, async (req, res) => {
 //Domain/users/userList
 router.get("/usersList", authAdmin, async (req, res) => {
   try {
-    let perPage = req.query.perPage || 10;
+    let perPage = req.query.perPage || 5;
     let page = req.query.page - 1 || 0;
     let data = await UserModel
       .find({}, { password: 0 })
       .limit(perPage)
       .skip(page * perPage)
-      .sort({ _id: -1 })
     res.json(data)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(502).json({ err })
+  }
+})
+
+router.get("/count", async (req, res) => {
+  try {
+    let perPage = req.query.perPage || 5;
+    const count = await UserModel.countDocuments({});
+    res.json({ count, pages: Math.ceil(count / perPage) });
   }
   catch (err) {
     console.log(err);

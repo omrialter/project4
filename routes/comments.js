@@ -44,6 +44,51 @@ router.post("/:id", auth, async (req, res) => {
     }
 })
 
+// Update a group
+// Domain/groups/(id of the group)
+router.put("/:id", auth, async (req, res) => {
+    let validBody = validateComments(req.body);
+
+    if (validBody.error) {
+        return res.status(400).json(validBody.error.details)
+    }
+    try {
+        let id = req.params.id;
+        let data;
+        if (req.tokenData.role == "admin") {
+            data = await CommentModel.updateOne({ _id: id }, req.body);
+        }
+        else {
+            data = await CommentModel.updateOne({ _id: id, user_id: req.tokenData._id }, req.body);
+        }
+        res.json(data);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(502).json({ err })
+    }
+})
+
+//delete comment
+// Domain/comments/(id of the coment)
+router.delete("/:id", auth, async (req, res) => {
+    try {
+        let id = req.params.id;
+        let data;
+        if (req.tokenData.role == "admin") {
+            data = await CommentModel.deleteOne({ _id: id });
+        }
+        else {
+            data = await CommentModel.deleteOne({ _id: id, user_id: req.tokenData._id });
+        }
+        res.json(data);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(502).json({ err })
+    }
+})
+
 
 
 module.exports = router;

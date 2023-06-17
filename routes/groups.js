@@ -1,11 +1,32 @@
 const express = require("express");
 const { validateGroups, GroupModel } = require("../models/groupModel");
 const router = express.Router();
-const { auth } = require("../auth/auth");
+const { auth, authAdmin } = require("../auth/auth");
 
 router.get("/", async (req, res) => {
     res.json({ msg: "Express homepage work" });
 })
+
+//get all groups(only admin)
+//Domain/users/groupsList
+
+router.get("/groupsList", authAdmin, async (req, res) => {
+    try {
+        let perPage = req.query.perPage || 10;
+        let page = req.query.page - 1 || 0;
+        let data = await GroupModel
+            .find({})
+            .limit(perPage)
+            .skip(page * perPage)
+            .sort({ _id: -1 })
+        res.json(data)
+    }
+    catch (err) {
+        console.log(err);
+        res.status(502).json({ err })
+    }
+})
+
 
 router.post("/", auth, async (req, res) => {
     let validBody = validateGroups(req.body);
@@ -25,4 +46,27 @@ router.post("/", auth, async (req, res) => {
         res.status(502).json({ msg: "An error occurred while trying to save the group." })
     }
 })
+
+
+//delete group
+// Domain/groups/(id of the group)
+router.delete("/:id", auth, async (req, res) => {
+    try {
+        let id = req.params.id;
+        let data;
+        if (req.tokenData.role == "admin") {
+            data = await GroupModel.deleteOne({ _id: id });
+        }
+        else {
+            data = await GroupModel.deleteOne({ _id: id, user_id: req.tokenData._id });
+        }
+        res.json(data);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(502).json({ err })
+    }
+})
+
+
 module.exports = router;
