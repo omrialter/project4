@@ -6,6 +6,7 @@ let schema = new mongoose.Schema({
     user_name: String,
     user_id: String,
     img_url: String,
+    profilePic: String,
     likes: {
         type: Array, default: []
     },

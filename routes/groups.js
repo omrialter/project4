@@ -27,6 +27,23 @@ router.get("/groupsList", authAdmin, async (req, res) => {
     }
 })
 
+router.get("/groupsListUser", auth, async (req, res) => {
+    try {
+        let perPage = req.query.perPage || 10;
+        let page = req.query.page - 1 || 0;
+        let data = await GroupModel
+            .find({ members: req.tokenData._id })
+            .limit(perPage)
+            .skip(page * perPage)
+            .sort({ _id: -1 })
+        res.json(data)
+    }
+    catch (err) {
+        console.log(err);
+        res.status(502).json({ err })
+    }
+})
+
 
 router.post("/", auth, async (req, res) => {
     let validBody = validateGroups(req.body);
@@ -47,6 +64,23 @@ router.post("/", auth, async (req, res) => {
     }
 })
 
+router.put("/follow/:id", auth, async (req, res) => {
+    try {
+        const group = await GroupModel.findById(req.params.id);
+        const currentUser = await GroupModel.findById(req.tokenData._id);
+        if (!group.members.includes(currentUser)) {
+            await group.updateOne({ $push: { members: req.tokenData._id } })
+            res.json("group has been followed ")
+
+        } else {
+            res.status(403).json("you already follow this group");
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(502).json({ msg: "An error occurred while trying to save the group." })
+    }
+})
 
 //delete group
 // Domain/groups/(id of the group)

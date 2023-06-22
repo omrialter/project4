@@ -9,13 +9,13 @@ const { UserModel } = require("../models/userModel");
 
 // get all the post of the users you following 
 // Domain/userPosts
+
 router.get("/", auth, async (req, res) => {
     let perPage = 10;
     let page = req.query.page - 1 || 0;
     let sort = req.query.sort || "date_created";
     let reverse = (req.query.reverse == "yes") ? 1 : -1;
     try {
-
         const allPosts = await UserPostModel.find({ $or: [{ user_id: req.tokenData._id }, { user_id: req.tokenData.followings }] }).
             limit(perPage)
             .skip(page * perPage)
@@ -76,6 +76,8 @@ router.post("/", auth, async (req, res) => {
         let userPost = new UserPostModel(req.body);
         userPost.user_name = req.tokenData.user_name;
         userPost.user_id = req.tokenData._id;
+        let user = await UserModel.findById(req.tokenData._id);
+        userPost.profilePic = user.profilePic;
         await userPost.save();
         res.status(201).json(userPost);
 
