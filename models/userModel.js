@@ -31,6 +31,9 @@ let schema = new mongoose.Schema({
     saved_posts: {
         type: Array, default: [],
     },
+    posts_posted: {
+        type: Array, default: [],
+    },
     relationship: {
         type: Number, enum: [1, 2, 3],
     },

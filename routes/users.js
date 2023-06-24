@@ -43,6 +43,19 @@ router.get("/OtherInfo/:id", authAdmin, async (req, res) => {
   }
 })
 
+// Get user info (clinet)
+// Domain/users/userInfo?user_name=koko
+router.get("/otherUserInfo", auth, async (req, res) => {
+  try {
+    let { user_name } = req.query; // Retrieve user_name from query parameter
+    let user = await UserModel.findOne({ user_name }, { password: 0 });
+    res.json(user);
+  } catch (err) {
+    console.log(err);
+    res.status(502).json({ err });
+  }
+});
+
 //get all users(only admin)
 //Domain/users/userList
 router.get("/usersList", authAdmin, async (req, res) => {
